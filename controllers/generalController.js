@@ -14,7 +14,7 @@ exports.updateOnboarding = catchAsync(async (req, res, next) => {
     let queryString = `
     UPDATE ${"`"}task_summarizer_db${"`"}.${"`"}users${"`"}
     SET ${"`"}onboarding${"`"} = '${JSON.stringify(obObj)}'
-    WHERE ${"`"}email${"`"} = '${decodedToken.id}';
+    WHERE ${"`"}user_id${"`"} = '${decodedToken.id}';
     `;
 
     const serverFunctions = require("../server");

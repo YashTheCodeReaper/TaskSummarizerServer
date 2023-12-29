@@ -130,7 +130,7 @@ exports.logInUser = catchAsync(async (req, res, next) => {
     }
 
     let queryString = `
-    SELECT ${"`"}users${"`"}.${"`"}email${"`"}, ${"`"}users${"`"}.${"`"}password${"`"} FROM ${"`"}task_summarizer_db${"`"}.${"`"}users${"`"} 
+    SELECT ${"`"}users${"`"}.${"`"}user_id${"`"}, ${"`"}users${"`"}.${"`"}password${"`"} FROM ${"`"}task_summarizer_db${"`"}.${"`"}users${"`"} 
     WHERE ${"`"}users${"`"}.${"`"}email${"`"} = '${credentials.email}';
     `;
 
@@ -146,10 +146,11 @@ exports.logInUser = catchAsync(async (req, res, next) => {
       }
 
       if (result && result.length) {
+        console.log(result);
         bcrypt.compare(
           credentials.password,
           result[0].password,
-          (err, result) => {
+          (err, result1) => {
             if (err) {
               response.status(400).json({
                 status: "failed",
@@ -159,8 +160,8 @@ exports.logInUser = catchAsync(async (req, res, next) => {
               return;
             }
 
-            if (result) {
-              createSendToken(credentials.email, res, credentials.staySigned);
+            if (result1) {
+              createSendToken(result[0].user_id, res, credentials.staySigned);
             } else {
               res.status(200).json({
                 status: "failed",
@@ -183,8 +184,8 @@ exports.logInUser = catchAsync(async (req, res, next) => {
   }
 });
 
-function createSendToken(email, res, staySigned) {
-  const token = signToken(email, staySigned);
+function createSendToken(id, res, staySigned) {
+  const token = signToken(id, staySigned);
   res.status(200).json({
     status: "success",
     message: "Successfully logged in the user",
@@ -215,7 +216,7 @@ exports.authorizeUser = catchAsync(async (req, res, next) => {
 
     let queryString = `
     SELECT * FROM ${"`"}task_summarizer_db${"`"}.${"`"}users${"`"} 
-    WHERE ${"`"}users${"`"}.${"`"}email${"`"} = '${decodedToken.id}';
+    WHERE ${"`"}users${"`"}.${"`"}user_id${"`"} = '${decodedToken.id}';
     `;
 
     const serverFunctions = require("../server");
@@ -255,7 +256,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
     let queryString = `
     SELECT ${"`"}users${"`"}.${"`"}email${"`"} FROM ${"`"}task_summarizer_db${"`"}.${"`"}users${"`"} 
-    WHERE ${"`"}users${"`"}.${"`"}email${"`"} = '${decodedToken.id}';
+    WHERE ${"`"}users${"`"}.${"`"}user_id${"`"} = '${decodedToken.id}';
     `;
 
     const serverFunctions = require("../server");
@@ -269,7 +270,7 @@ exports.protect = catchAsync(async (req, res, next) => {
         return new AppError("403", "Error while checking authorization!");
       }
 
-      if (result && result.length) {
+      if (result && result.length == 1) {
         next();
       } else {
         res.status(200).json({
