@@ -15,7 +15,7 @@ exports.createTeam = catchAsync(async (req, res, next) => {
       profilePicture: req.body.profilePicture,
     };
 
-    teamObj.users = [await decodeUserId(req)];
+    let user_id = await decodeUserId(req);
 
     let profpicFileName = "";
     if (teamObj.profilePicture) {
@@ -33,7 +33,6 @@ exports.createTeam = catchAsync(async (req, res, next) => {
     (${"`"}team_id${"`"},
     ${"`"}name${"`"},
     ${"`"}description${"`"},
-    ${"`"}users${"`"},
     ${"`"}constraints${"`"},
     ${"`"}profile_picture_path${"`"},
     ${"`"}created_by${"`"})
@@ -41,10 +40,9 @@ exports.createTeam = catchAsync(async (req, res, next) => {
     (UUID(),
     "${teamObj.name}",
     "${teamObj.description}",
-    '${JSON.stringify(teamObj.users)}',
     '${JSON.stringify(teamObj.constraints)}',
     "${profpicFileName ? `/images/team_profpics/${profpicFileName}` : ""}",
-    '${teamObj.users[0]}');
+    '${user_id}');
     `;
 
     const serverFunctions = require("../server");
@@ -76,7 +74,7 @@ async function saveBase64Image(base64Url, outputFilePath) {
   }
 }
 
-exports.getTeam = catchAsync(async (req, res, next) => {
+exports.getMyTeam = catchAsync(async (req, res, next) => {
   try {
     let user_id = await decodeUserId(req);
 
@@ -92,6 +90,38 @@ exports.getTeam = catchAsync(async (req, res, next) => {
       `Successfully got a team`,
       "Internal server error!",
       "Error getting a team!"
+    );
+  } catch (error) {
+    console.error(error);
+    return next(new AppError("500", "Internal server error"));
+  }
+});
+
+exports.getAllInvolvedTeams = catchAsync(async (req, res, next) => {
+  try {
+    let allTeams = req.body.allTeams;
+
+    let queryConditions = "";
+    allTeams.forEach((teamId, index) => {
+      queryConditions += `${"`"}team_id${"`"} = '${teamId}'${
+        index + 1 == allTeams.length ? " ;" : " OR "
+      }`;
+    });
+
+    let queryString = `
+    SELECT * FROM ${"`"}task_summarizer_db${"`"}.${"`"}teams${"`"}${
+      queryConditions ? " WHERE " + queryConditions : ";"
+    }`;
+
+    console.log(queryString);
+
+    const serverFunctions = require("../server");
+    serverFunctions.databaseHandler(
+      queryString,
+      res,
+      `Successfully fetched the specified teams`,
+      "Internal server error!",
+      "Error fetching the specified teams!"
     );
   } catch (error) {
     console.error(error);

@@ -7,6 +7,7 @@ const router = express.Router();
 router.use(authController.protect);
 
 router.post("/createTeam", teamsController.createTeam);
-router.get("/getTeam", teamsController.getTeam);
+router.get("/getMyTeam", teamsController.getMyTeam);
+router.post("/getAllInvolvedTeams", teamsController.getAllInvolvedTeams);
 
 module.exports = router;

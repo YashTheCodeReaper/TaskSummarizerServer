@@ -23,6 +23,7 @@ const zohoRouter = require("./routers/zohoRouter");
 const generalRouter = require("./routers/generalRouter");
 const boardsRouter = require("./routers/boardsRouter");
 const teamsRouter = require("./routers/teamsRouter");
+const usersRouter = require("./routers/usersRouter");
 
 // Init express
 const app = express();
@@ -104,6 +105,7 @@ app.use("/tetherfi/tsum/api/v1/zoho", zohoRouter);
 app.use("/tetherfi/tsum/api/v1/general", generalRouter);
 app.use("/tetherfi/tsum/api/v1/boards", boardsRouter);
 app.use("/tetherfi/tsum/api/v1/teams", teamsRouter);
+app.use("/tetherfi/tsum/api/v1/users", usersRouter);
 
 // Url validator
 app.all("*", (req, res, next) => {
