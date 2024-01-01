@@ -21,6 +21,8 @@ const authRouter = require("./routers/authRouter");
 const jiraRouter = require("./routers/jiraRouter");
 const zohoRouter = require("./routers/zohoRouter");
 const generalRouter = require("./routers/generalRouter");
+const boardsRouter = require("./routers/boardsRouter");
+const teamsRouter = require("./routers/teamsRouter");
 
 // Init express
 const app = express();
@@ -45,7 +47,7 @@ app.use(function (req, res, next) {
     "Content-Security-Policy",
     "default-src *'; font-src *; img-src *; script-src *; style-src *; frame-src *"
   );
-  res.header("Access-Control-Allow-Origin", '*');
+  res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", true);
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header(
@@ -100,6 +102,8 @@ app.use("/tetherfi/tsum/api/v1/auth", authRouter);
 app.use("/tetherfi/tsum/api/v1/jira", jiraRouter);
 app.use("/tetherfi/tsum/api/v1/zoho", zohoRouter);
 app.use("/tetherfi/tsum/api/v1/general", generalRouter);
+app.use("/tetherfi/tsum/api/v1/boards", boardsRouter);
+app.use("/tetherfi/tsum/api/v1/teams", teamsRouter);
 
 // Url validator
 app.all("*", (req, res, next) => {

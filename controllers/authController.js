@@ -25,7 +25,7 @@ exports.registerUser = catchAsync(async (req, res, next) => {
         timesheetCompanion: false,
         teams: false,
         settings: false,
-        intro: false
+        intro: false,
       },
     };
 
@@ -56,16 +56,14 @@ exports.registerUser = catchAsync(async (req, res, next) => {
         ${"`"}onboarding${"`"}
         )
         VALUES
-        (
-        UUID(),
+        (UUID(),
         '${userCreds.email}',
         '${userCreds.name}',
         '${hashedPassword}',
-        ${JSON.stringify(userCreds.jira)},
-        '/images/profpics/${profpicFileName}',
+        '${JSON.stringify(userCreds.jira)}',
+        '${profpicFileName ? `/images/profpics/${profpicFileName}` : ""}',
         '${userCreds.designation}',
-        '${JSON.stringify(userCreds.onboarding)}'
-        );
+        '${JSON.stringify(userCreds.onboarding)}');
         `;
 
         const serverFunctions = require("../server");

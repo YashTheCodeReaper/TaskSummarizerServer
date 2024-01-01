@@ -1,20 +1,16 @@
 const catchAsync = require("../utils/catchAsync");
+const decodeUserId = require("../utils/decodeUserId");
 const AppError = require("../utils/appError");
-const jwt = require("jsonwebtoken");
-const { promisify } = require("util");
 
 exports.updateOnboarding = catchAsync(async (req, res, next) => {
   try {
     let obObj = req.body.obObj;
-    const decodedToken = await promisify(jwt.verify)(
-      req.headers.authorization.split(" ")[1],
-      process.env.JWT_SECRET
-    );
+    const userId = await decodeUserId(req);
 
     let queryString = `
     UPDATE ${"`"}task_summarizer_db${"`"}.${"`"}users${"`"}
     SET ${"`"}onboarding${"`"} = '${JSON.stringify(obObj)}'
-    WHERE ${"`"}user_id${"`"} = '${decodedToken.id}';
+    WHERE ${"`"}user_id${"`"} = '${userId}';
     `;
 
     const serverFunctions = require("../server");
@@ -26,7 +22,7 @@ exports.updateOnboarding = catchAsync(async (req, res, next) => {
       "Error updating onboarding status!"
     );
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return next(new AppError("500", "Internal server error"));
   }
 });
