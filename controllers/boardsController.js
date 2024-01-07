@@ -73,20 +73,22 @@ exports.getAllBoards = catchAsync(async (req, res, next) => {
   }
 });
 
-exports.updateLinkedTeams = catchAsync(async (req, res, next) => {
+exports.addLinkedTeam = catchAsync(async (req, res, next) => {
   try {
-    let updateLinkedTeamsObj = {
+    let linkTeamObj = {
       board_id: req.body.boardId,
-      linked_teams: req.body.linkedTeams,
+      team_id: req.body.teamToLink,
     };
 
     let queryString = `
     UPDATE ${"`"}task_summarizer_db${"`"}.${"`"}boards${"`"}
-    SET ${"`"}linked_teams${"`"} = '${JSON.stringify(
-      updateLinkedTeamsObj.linked_teams
-    )}'
-    WHERE ${"`"}board_id${"`"} = '${updateLinkedTeamsObj.board_id}';
+    SET ${"`"}linked_teams${"`"} = JSON_ARRAY_APPEND(${"`"}linked_teams${"`"}, '$', '${
+      linkTeamObj.team_id
+    }')
+    WHERE ${"`"}board_id${"`"} = '${linkTeamObj.board_id}';
     `;
+
+    console.log(queryString);
 
     const serverFunctions = require("../server");
     serverFunctions.databaseHandler(

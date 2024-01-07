@@ -8,6 +8,6 @@ router.use(authController.protect);
 
 router.post("/createBoard", boardsController.createBoard);
 router.get("/getAllBoards", boardsController.getAllBoards);
-router.patch("/updateLinkedTeams", boardsController.updateLinkedTeams);
+router.patch("/addLinkedTeam", boardsController.addLinkedTeam);
 
 module.exports = router;

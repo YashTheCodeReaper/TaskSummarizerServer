@@ -2,14 +2,14 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const decodeUserId = require("../utils/decodeUserId");
 
-exports.updateMyTeams = catchAsync(async (req, res, next) => {
+exports.joinTeam = catchAsync(async (req, res, next) => {
   try {
-    let modifiedTeams = req.body.modifiedTeams;
+    let team_id = req.body.teamId;
     let user_id = await decodeUserId(req);
 
     let queryString = `
     UPDATE ${"`"}task_summarizer_db${"`"}.${"`"}users${"`"}
-    SET ${"`"}teams${"`"} = '${JSON.stringify(modifiedTeams)}'
+    SET ${"`"}teams${"`"} = JSON_ARRAY_APPEND(${"`"}teams${"`"}, '$', '${team_id}')
     WHERE ${"`"}user_id${"`"} = '${user_id}';
     `;
 
@@ -26,21 +26,6 @@ exports.updateMyTeams = catchAsync(async (req, res, next) => {
     return next(new AppError("500", "Internal server error"));
   }
 });
-
-async function saveBase64Image(base64Url, outputFilePath) {
-  try {
-    const response = await axios.get(base64Url, {
-      responseType: "arraybuffer",
-    });
-    const imageBuffer = Buffer.from(response.data, "binary");
-    const resizedBuffer = await sharp(imageBuffer)
-      .resize({ width: 100, height: 100 })
-      .toBuffer();
-    fs.writeFileSync(outputFilePath, resizedBuffer);
-  } catch (error) {
-    console.error("Error saving image:", error.message);
-  }
-}
 
 exports.getMyTeam = catchAsync(async (req, res, next) => {
   try {

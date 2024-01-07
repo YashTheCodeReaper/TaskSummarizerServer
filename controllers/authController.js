@@ -27,6 +27,7 @@ exports.registerUser = catchAsync(async (req, res, next) => {
         settings: false,
         intro: false,
       },
+      teams: [],
     };
 
     let profpicFileName = "";
@@ -53,7 +54,8 @@ exports.registerUser = catchAsync(async (req, res, next) => {
         ${"`"}jira${"`"},
         ${"`"}profile_picture_path${"`"},
         ${"`"}designation${"`"},
-        ${"`"}onboarding${"`"}
+        ${"`"}onboarding${"`"},
+        ${"`"}teams${"`"}
         )
         VALUES
         (UUID(),
@@ -63,7 +65,8 @@ exports.registerUser = catchAsync(async (req, res, next) => {
         '${JSON.stringify(userCreds.jira)}',
         '${profpicFileName ? `/images/profpics/${profpicFileName}` : ""}',
         '${userCreds.designation}',
-        '${JSON.stringify(userCreds.onboarding)}');
+        '${JSON.stringify(userCreds.onboarding)}',
+        '${JSON.stringify(userCreds.teams)}');
         `;
 
         const serverFunctions = require("../server");

@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.use(authController.protect);
 
-router.patch("/updateMyTeams", usersController.updateMyTeams);
+router.patch("/joinTeam", usersController.joinTeam);
 
 module.exports = router;
